@@ -3,6 +3,14 @@
   <model name="dam_structure">
     <static>true</static>
 
+    <!-- ================================================================
+         Main gravity-dam body
+
+         The large collision box is deliberately retained.  The detail
+         around it is mostly visual-only: this keeps the existing AUV path
+         planning and collision behaviour stable while giving the camera a
+         recognizable concrete dam instead of a floating wall.
+         =============================================================== -->
     <link name="dam_wall">
       <pose>0 -30 -20 0 0 0</pose>
       <inertial>
@@ -37,6 +45,321 @@
             </metal>
           </pbr>
         </material>
+      </visual>
+    </link>
+
+    <!-- Reinforced concrete ribs make the downstream face read as a dam and
+         break up the very large flat wall.  They are visual-only details;
+         the wall collision remains the authoritative structural collision. -->
+    <link name="downstream_buttresses">
+      <visual name="buttress_left_outer">
+        <pose>-32 -26.1 -24 0 0 0</pose>
+        <geometry><box><size>4.0 3.5 52</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <specular>0.12 0.12 0.12 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="buttress_left_inner">
+        <pose>-16 -26.1 -24 0 0 0</pose>
+        <geometry><box><size>4.0 3.5 52</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <specular>0.12 0.12 0.12 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="buttress_center">
+        <pose>0 -26.1 -24 0 0 0</pose>
+        <geometry><box><size>4.0 3.5 52</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <specular>0.12 0.12 0.12 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="buttress_right_inner">
+        <pose>16 -26.1 -24 0 0 0</pose>
+        <geometry><box><size>4.0 3.5 52</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <specular>0.12 0.12 0.12 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="buttress_right_outer">
+        <pose>32 -26.1 -24 0 0 0</pose>
+        <geometry><box><size>4.0 3.5 52</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <specular>0.12 0.12 0.12 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+
+      <!-- Short upper returns give the ribs a stepped, poured-concrete shape. -->
+      <visual name="upper_return_left">
+        <pose>-24 -26.1 5 0 0 0</pose>
+        <geometry><box><size>12 3.5 10</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="upper_return_right">
+        <pose>24 -26.1 5 0 0 0</pose>
+        <geometry><box><size>12 3.5 10</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Horizontal construction joints and darker panel seams add scale to
+         the concrete face without needing a large decal or mesh asset. -->
+    <link name="dam_face_joints">
+      <visual name="joint_upper">
+        <pose>0 -27.96 5.0 0 0 0</pose>
+        <geometry><box><size>78 0.06 0.16</size></box></geometry>
+        <material><ambient>0.16 0.18 0.17 1</ambient><diffuse>0.25 0.27 0.26 1</diffuse></material>
+      </visual>
+      <visual name="joint_middle">
+        <pose>0 -27.96 -12.0 0 0 0</pose>
+        <geometry><box><size>78 0.06 0.16</size></box></geometry>
+        <material><ambient>0.16 0.18 0.17 1</ambient><diffuse>0.25 0.27 0.26 1</diffuse></material>
+      </visual>
+      <visual name="joint_lower">
+        <pose>0 -27.96 -30.0 0 0 0</pose>
+        <geometry><box><size>78 0.06 0.16</size></box></geometry>
+        <material><ambient>0.16 0.18 0.17 1</ambient><diffuse>0.25 0.27 0.26 1</diffuse></material>
+      </visual>
+      <visual name="joint_left">
+        <pose>-24 -27.95 -21 0 0 0</pose>
+        <geometry><box><size>0.14 0.06 57</size></box></geometry>
+        <material><ambient>0.16 0.18 0.17 1</ambient><diffuse>0.25 0.27 0.26 1</diffuse></material>
+      </visual>
+      <visual name="joint_right">
+        <pose>24 -27.95 -21 0 0 0</pose>
+        <geometry><box><size>0.14 0.06 57</size></box></geometry>
+        <material><ambient>0.16 0.18 0.17 1</ambient><diffuse>0.25 0.27 0.26 1</diffuse></material>
+      </visual>
+    </link>
+
+    <!-- Crest deck, upstream/downstream parapets, and a small control building
+         create the unmistakable top profile of a concrete dam. -->
+    <link name="dam_crest">
+      <visual name="crest_cap">
+        <pose>0 -30 10.9 0 0 0</pose>
+        <geometry><box><size>84 8 1.8</size></box></geometry>
+        <material>
+          <ambient>0.58 0.58 0.54 1</ambient><diffuse>1 1 1 1</diffuse>
+          <specular>0.18 0.18 0.18 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="downstream_parapet">
+        <pose>0 -26.5 12.35 0 0 0</pose>
+        <geometry><box><size>82 0.55 2.2</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="crest_end_left">
+        <pose>-41 -30 12.0 0 0 0</pose>
+        <geometry><box><size>1.5 8 3.8</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="crest_end_right">
+        <pose>41 -30 12.0 0 0 0</pose>
+        <geometry><box><size>1.5 8 3.8</size></box></geometry>
+        <material>
+          <ambient>0.52 0.52 0.48 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Four dark gate faces and their concrete piers suggest spillway bays.
+         They are placed on the downstream face above the inspection zone. -->
+    <link name="spillway_bays">
+      <visual name="spillway_gate_left_outer">
+        <pose>-24 -27.91 3.5 0 0 0</pose>
+        <geometry><box><size>11.0 0.12 12.0</size></box></geometry>
+        <material>
+          <ambient>0.04 0.07 0.08 1</ambient><diffuse>0.10 0.16 0.18 1</diffuse>
+          <specular>0.55 0.6 0.6 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="spillway_gate_left_inner">
+        <pose>-8 -27.91 3.5 0 0 0</pose>
+        <geometry><box><size>11.0 0.12 12.0</size></box></geometry>
+        <material>
+          <ambient>0.04 0.07 0.08 1</ambient><diffuse>0.10 0.16 0.18 1</diffuse>
+          <specular>0.55 0.6 0.6 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="spillway_gate_right_inner">
+        <pose>8 -27.91 3.5 0 0 0</pose>
+        <geometry><box><size>11.0 0.12 12.0</size></box></geometry>
+        <material>
+          <ambient>0.04 0.07 0.08 1</ambient><diffuse>0.10 0.16 0.18 1</diffuse>
+          <specular>0.55 0.6 0.6 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="spillway_gate_right_outer">
+        <pose>24 -27.91 3.5 0 0 0</pose>
+        <geometry><box><size>11.0 0.12 12.0</size></box></geometry>
+        <material>
+          <ambient>0.04 0.07 0.08 1</ambient><diffuse>0.10 0.16 0.18 1</diffuse>
+          <specular>0.55 0.6 0.6 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+
+      <visual name="spillway_header">
+        <pose>0 -27.82 9.9 0 0 0</pose>
+        <geometry><box><size>78 0.45 1.1</size></box></geometry>
+        <material>
+          <ambient>0.48 0.48 0.44 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="spillway_sill">
+        <pose>0 -27.75 -2.75 0 0 0</pose>
+        <geometry><box><size>78 1.0 1.2</size></box></geometry>
+        <material>
+          <ambient>0.48 0.48 0.44 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+    </link>
+
+    <!-- A low-poly control/power building makes the crest read as an active
+         hydroelectric facility. The windows are intentionally dark and
+         emissive-looking so they remain readable through underwater fog. -->
+    <link name="crest_control_building">
+      <visual name="control_room">
+        <pose>-25 -30 15.0 0 0 0</pose>
+        <geometry><box><size>16 8 6</size></box></geometry>
+        <material>
+          <ambient>0.48 0.48 0.45 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="control_room_roof">
+        <pose>-25 -30 18.25 0 0 0</pose>
+        <geometry><box><size>18 10 0.7</size></box></geometry>
+        <material>
+          <ambient>0.18 0.2 0.2 1</ambient><diffuse>0.3 0.34 0.34 1</diffuse>
+          <specular>0.5 0.5 0.5 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="control_window_left">
+        <pose>-29.5 -25.94 15.3 0 0 0</pose>
+        <geometry><box><size>3.0 0.10 1.5</size></box></geometry>
+        <material><ambient>0.02 0.08 0.1 1</ambient><diffuse>0.04 0.18 0.22 1</diffuse><specular>0.7 0.8 0.8 1</specular></material>
+      </visual>
+      <visual name="control_window_right">
+        <pose>-24.5 -25.94 15.3 0 0 0</pose>
+        <geometry><box><size>3.0 0.10 1.5</size></box></geometry>
+        <material><ambient>0.02 0.08 0.1 1</ambient><diffuse>0.04 0.18 0.22 1</diffuse><specular>0.7 0.8 0.8 1</specular></material>
+      </visual>
+      <visual name="control_window_far">
+        <pose>-20.5 -25.94 15.3 0 0 0</pose>
+        <geometry><box><size>3.0 0.10 1.5</size></box></geometry>
+        <material><ambient>0.02 0.08 0.1 1</ambient><diffuse>0.04 0.18 0.22 1</diffuse><specular>0.7 0.8 0.8 1</specular></material>
       </visual>
     </link>
 
@@ -78,6 +401,41 @@
               <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
             </metal>
           </pbr>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Heavy flange and dark intake mouth at the pipe's dam-side end. -->
+    <link name="pipe_intake_details">
+      <visual name="pipe_wall_flange">
+        <pose>15 -28.35 -40 -1.5708 0 0</pose>
+        <geometry><cylinder><radius>2.55</radius><length>0.65</length></cylinder></geometry>
+        <material>
+          <ambient>0.22 0.24 0.25 1</ambient><diffuse>0.7 0.72 0.7 1</diffuse>
+          <specular>0.45 0.45 0.45 1</specular>
+          <pbr><metal>
+            <albedo_map>materials/textures/rusty_metal_albedo.png</albedo_map>
+            <normal_map>materials/textures/rusty_metal_normal.png</normal_map>
+            <roughness_map>materials/textures/rusty_metal_roughness.png</roughness_map>
+            <metalness_map>materials/textures/rusty_metal_metalness.png</metalness_map>
+          </metal></pbr>
+        </material>
+      </visual>
+      <visual name="pipe_intake_mouth">
+        <pose>15 -28.72 -40 -1.5708 0 0</pose>
+        <geometry><cylinder><radius>1.95</radius><length>0.10</length></cylinder></geometry>
+        <material><ambient>0.015 0.025 0.03 1</ambient><diffuse>0.025 0.06 0.07 1</diffuse><specular>0.15 0.2 0.2 1</specular></material>
+      </visual>
+      <visual name="pipe_support_lower">
+        <pose>15 -25.5 -42.8 0 0 0</pose>
+        <geometry><box><size>5.0 2.0 1.0</size></box></geometry>
+        <material>
+          <ambient>0.45 0.45 0.42 1</ambient><diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>materials/textures/concrete_albedo.png</albedo_map>
+            <normal_map>materials/textures/concrete_normal.png</normal_map>
+            <roughness_map>materials/textures/concrete_roughness.png</roughness_map>
+          </metal></pbr>
         </material>
       </visual>
     </link>

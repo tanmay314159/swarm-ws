@@ -1,0 +1,14 @@
+# System/ROS packages come from apt; use a --system-site-packages venv.
+# These wheels include the CUDA runtime needed for NVIDIA inference.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.10.0+cu128
+torchvision==0.25.0+cu128
+segmentation-models-pytorch==0.5.0
+transformers>=4.49,<5
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+Flask>=3,<4
+# OpenCV is provided by python3-opencv (apt).
+# ROS Python packages still use pkg_resources when building.
+setuptools>=78,<80

@@ -1,12 +1,15 @@
 import os
+import platform
 
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
+    LogInfo,
     OpaqueFunction,
     SetEnvironmentVariable,
     TimerAction,
+    UnsetEnvironmentVariable,
 )
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -127,6 +130,15 @@ def generate_launch_description():
                      "alone measured 200%+ CPU just rendering -- use this for "
                      "automated verification/CI, not for the actual judged demo."
     )
+    declare_render_engine = DeclareLaunchArgument(
+        "render_engine", default_value="ogre2",
+        description="Gazebo rendering backend. Ogre2 uses the system GPU for "
+                    "the GUI, cameras, and gpu_lidar sensors."
+    )
+    declare_nvidia = DeclareLaunchArgument(
+        "nvidia", default_value="true",
+        description="Prefer NVIDIA rendering through WSLg/D3D12 or native PRIME."
+    )
 
     models_dir = os.path.join(get_package_share_directory("simulation"), "models")
     existing_resource_path = os.environ.get("GZ_SIM_RESOURCE_PATH", "")
@@ -137,21 +149,79 @@ def generate_launch_description():
         name="GZ_SIM_RESOURCE_PATH", value=resource_path_value
     )
 
+    def configure_gpu(context, *args, **kwargs):
+        """Select NVIDIA OpenGL rendering for native Linux and WSLg."""
+        use_nvidia = LaunchConfiguration("nvidia").perform(context).lower()
+        if use_nvidia != "true":
+            return []
+        actions = [
+            # Prevent an inherited software-rendering setting from silently
+            # moving Ogre2 onto the CPU.
+            SetEnvironmentVariable(
+                name="LIBGL_ALWAYS_SOFTWARE", value="0"
+            ),
+            SetEnvironmentVariable(name="QT_QPA_PLATFORM", value="xcb"),
+        ]
+        if "microsoft" in platform.release().lower():
+            # WSL has no native NVIDIA GLX driver. Mesa translates OpenGL to
+            # D3D12 through the Windows NVIDIA driver and /usr/lib/wsl/lib.
+            library_path = context.environment.get("LD_LIBRARY_PATH", "")
+            actions.extend([
+                UnsetEnvironmentVariable(name="__NV_PRIME_RENDER_OFFLOAD"),
+                UnsetEnvironmentVariable(name="__GLX_VENDOR_LIBRARY_NAME"),
+                SetEnvironmentVariable(name="GALLIUM_DRIVER", value="d3d12"),
+                SetEnvironmentVariable(
+                    name="MESA_D3D12_DEFAULT_ADAPTER_NAME", value="NVIDIA"
+                ),
+                SetEnvironmentVariable(
+                    name="LD_LIBRARY_PATH",
+                    value="/usr/lib/wsl/lib" + (
+                        ":" + library_path if library_path else ""
+                    ),
+                ),
+            ])
+        else:
+            actions.extend([
+                SetEnvironmentVariable(
+                    name="__NV_PRIME_RENDER_OFFLOAD", value="1"
+                ),
+                SetEnvironmentVariable(
+                    name="__GLX_VENDOR_LIBRARY_NAME", value="nvidia"
+                ),
+            ])
+        return actions
+
     def make_gazebo(context, *args, **kwargs):
         world_file = LaunchConfiguration("world").perform(context)
         world_full_path = os.path.join(
             get_package_share_directory("simulation"), "worlds", world_file
         )
         headless = LaunchConfiguration("headless").perform(context).lower() == "true"
-        cmd = ["gz", "sim", "-r", "-s", world_full_path] if headless \
-            else ["gz", "sim", "-r", world_full_path]
-        return [ExecuteProcess(cmd=cmd, output="screen")]
+        render_engine = LaunchConfiguration("render_engine").perform(context)
+        use_nvidia = LaunchConfiguration("nvidia").perform(context).lower() == "true"
+        cmd = ["gz", "sim", "-r"]
+        if headless:
+            cmd.append("-s")
+        # Keep the world positional argument before the renderer option, as
+        # documented by Gazebo's `gz sim ... --render-engine ...` CLI.
+        cmd.extend([world_full_path, "--render-engine", render_engine])
+        return [
+            LogInfo(msg=[
+                "Gazebo rendering with ", render_engine,
+                "; NVIDIA selection ", "enabled" if use_nvidia else "disabled",
+                ". Check the renderer with glxinfo -B."
+            ]),
+            ExecuteProcess(cmd=cmd, output="screen"),
+        ]
 
     return LaunchDescription([
         declare_num_auvs,
         declare_world,
         declare_headless,
+        declare_render_engine,
+        declare_nvidia,
         set_resource_path,
+        OpaqueFunction(function=configure_gpu),
         OpaqueFunction(function=make_gazebo),
         OpaqueFunction(function=spawn_and_bridge),
     ])

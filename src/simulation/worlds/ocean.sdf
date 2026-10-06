@@ -23,11 +23,14 @@
     <plugin
         filename="gz-sim-sensors-system"
         name="gz::sim::systems::Sensors">
+        <!-- Ogre2 is the GPU-backed renderer used by the camera and
+             gpu_lidar sensors.  The launch file selects the same engine for
+             the interactive Gazebo GUI. -->
         <render_engine>ogre2</render_engine>
     </plugin>
 
     <!-- Applies to every included model with a <buoyancy> tag or collision
-         volume -- AUVs spawned into this world (see models/auv/) get their
+         volume; AUVs spawned into this world (see models/auv/) get their
          buoyancy from this single world-level plugin, not per-model. -->
     <plugin
         filename="gz-sim-buoyancy-system"
@@ -50,7 +53,7 @@
         <background>0.02 0.18 0.28 1</background>
         <!-- Underwater murk: real oceans/reservoirs attenuate visibility to
              a few tens of meters, not the crisp infinite-visibility default
-             -- fog fades distant geometry into the background color instead
+             fog fades distant geometry into the background color instead
              of everything looking equally sharp regardless of range, which
              otherwise reads as "a dry-land scene with blue paint," not water. -->
         <fog>
@@ -63,7 +66,7 @@
         <grid>false</grid>
     </scene>
 
-    <!-- Seafloor: a large flat BOX, not an SDF <plane> -- a mathematically
+    <!-- Seafloor: a large flat BOX, not an SDF <plane>; a mathematically
          infinite plane geometry crashed the dartsim/ODE collision detector
          here with "ODE INTERNAL ERROR 1: assertion aabbBound >= dMinIntExact"
          (confirmed by isolating: removed everything else down to a single
@@ -74,7 +77,7 @@
          operates (water surface near z=0 down to the seafloor at z=-50).
          Moved into its own models/seafloor/ package (see that model's own
          model.config) so it can carry a real PBR sandy-seabed texture
-         instead of a flat material color -- resolved the same way as
+         instead of a flat material color; resolved the same way as
          dam_structure, via GZ_SIM_RESOURCE_PATH, so it stays fully local
          (no network access needed at demo time). -->
     <include>

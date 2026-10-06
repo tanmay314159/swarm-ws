@@ -39,6 +39,8 @@ def generate_launch_description():
     num_auvs = LaunchConfiguration("num_auvs")
     run_dir = LaunchConfiguration("run_dir")
     headless = LaunchConfiguration("headless")
+    render_engine = LaunchConfiguration("render_engine")
+    nvidia = LaunchConfiguration("nvidia")
     checkpoint_path = LaunchConfiguration("checkpoint_path")
     port = LaunchConfiguration("port")
 
@@ -46,6 +48,8 @@ def generate_launch_description():
         DeclareLaunchArgument("num_auvs", default_value="3"),
         DeclareLaunchArgument("run_dir", default_value="~/swarm_ws/live_run"),
         DeclareLaunchArgument("headless", default_value="false"),
+        DeclareLaunchArgument("render_engine", default_value="ogre2"),
+        DeclareLaunchArgument("nvidia", default_value="true"),
         DeclareLaunchArgument("checkpoint_path", default_value=_DEFAULT_CHECKPOINT),
         DeclareLaunchArgument("port", default_value="8080"),
 
@@ -53,7 +57,8 @@ def generate_launch_description():
         # subscribe to; the other stages stagger in behind it so each one's
         # first tick already has real data from the stage before it.
         _include("simulation", "simulation.launch.py",
-                 {"num_auvs": num_auvs, "headless": headless}, 0.0),
+                 {"num_auvs": num_auvs, "headless": headless,
+                  "render_engine": render_engine, "nvidia": nvidia}, 0.0),
         _include("occupancy_mapping", "occupancy_mapping.launch.py",
                  {"num_auvs": num_auvs, "run_dir": run_dir}, 8.0),
         _include("damage_detection", "damage_detection.launch.py",

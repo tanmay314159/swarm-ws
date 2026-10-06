@@ -9,7 +9,7 @@
          11kg-in-a-0.072m^3-box first attempt, which produced ~600N of net
          upward force and sent the vehicle rocketing to the surface (caught
          by checking real odometry after spawn, not assumed from the SDF
-         alone -- see M1 verification notes). -->
+         alone; see M1 verification notes). -->
     <link name="base_link">
       <pose>0 0 0 0 0 0</pose>
       <inertial>
@@ -18,7 +18,7 @@
              Buoyancy computes its centroid from the collision geometry).
              Without this offset, CG and CB coincide, there's zero
              metacentric righting moment, and the vehicle has no passive
-             roll/pitch stability -- confirmed empirically: with CG=CB the
+             roll/pitch stability; confirmed empirically: with CG=CB the
              spawned AUVs settled at essentially random tumbled
              orientations (~155 degrees off upright) despite stable
              position. A real ROV gets this from heavy ballast low / foam
@@ -53,7 +53,7 @@
       </visual>
 
       <!-- Forward-facing RGB camera. Relative (non-absolute) topic name so
-           gz-sim scopes it under this model's own instance path -- verify
+           gz-sim scopes it under this model's own instance path; verify
            the real resolved topic with `gz topic -l` after spawning rather
            than assuming, per-instance names are confirmed at launch time. -->
       <sensor name="front_camera" type="camera">
@@ -261,7 +261,7 @@
     </plugin>
 
     <!-- Added-mass / drag coefficients hand-picked for the ~44.6kg box hull
-         above at low (<1 m/s) speed -- NOT CFD-derived, scaled from the
+          above at low (<1 m/s) speed; NOT CFD-derived, scaled from the
          reference Tethys values found in /usr/share/gz/gz-sim8/worlds/
          auv_controls.sdf (tuned for a much larger torpedo hull) so this
          vehicle is responsive to tens-of-Newtons thrust commands instead of
@@ -269,7 +269,7 @@
 
          kDotP/mDotQ/nDotR (rotational added mass) MUST stay well below this
          link's real moments of inertia (ixx=0.6876, iyy=1.1615, izz=1.3846
-         above) -- an earlier attempt at -0.2/-1.2/-1.2 (mDotQ/nDotR close to
+          above); an earlier attempt at -0.2/-1.2/-1.2 (mDotQ/nDotR close to
          or exceeding the real iyy/izz) made the effective inertia matrix
          used by the constraint solver nearly singular and crashed the
          physics engine on the very first step (isolated by bisecting a
